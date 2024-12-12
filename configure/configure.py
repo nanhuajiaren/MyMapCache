@@ -25,6 +25,10 @@ class Configure:
     '''
     
     staticConfigures: list[StaticFolderConfigure]
+    '''static configures.'''
+    
+    sourceConfigures: list[dict]
+    '''data source configures, not processed.'''
     
     def __init__(self, data: dict):
         '''Read the configure object. Raises corespondent exception whenever encounters problem.'''
@@ -44,6 +48,11 @@ class Configure:
         
         assert 'static' in data, 'Static folder configure is required. Add a empty [] will fix this.'
         self.staticConfigures = [StaticFolderConfigure(v) for v in list(data['static'])]
+        
+        assert 'sources' in data, 'Source configure is required. Add something will fix this.'
+        self.sourceConfigures = data['sources']
+        if len(self.sourceConfigures) == 0:
+            print('Warning: No source found!')
         
         return
     

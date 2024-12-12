@@ -4,6 +4,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from configure.static_folder_configure import StaticFolderConfigure
 from configure.configure import Configure
+from map_sources.source_manage import getMapSource
 
 app = Flask(__name__)
 
@@ -12,7 +13,9 @@ def serverBase():
     return 'Server running!'
 
 def makeServer(app: Flask, config: Configure):
-    
+    for sourceConfig in config.sourceConfigures:
+        source = getMapSource(sourceConfig)
+        source.makeServer(app)
     for staticConfig in config.staticConfigures:
         makeStatic(app, staticConfig)
     return
