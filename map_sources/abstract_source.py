@@ -3,11 +3,17 @@ from flask import Flask
 class MapSource:
     '''
     The basic, abstract map source definition.
+    
+    Here, a "map source" is defined as a external, online service that can provide map tiles, in images or in vector. 
+    Any map source implementation should implement `cacheTile(...)` and `makeLocalPath(...)`, which is called in
+    "transformed services". The `makeServer(...)` method is called to create the server routing rules. If no server outputs
+    are required, leave it blank.
     '''
     
     def __init__(self, data: dict):
         '''
-        Initialize from the configure data block. 
+        Initialize from the configure data block. The data is not processed, so it's important to
+        check the config data in this 
         '''
         pass
     

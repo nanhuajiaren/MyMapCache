@@ -1,5 +1,5 @@
-.vscode
-private
-configure.json
+/.vscode
+/private
+/configure.json
 __pycache__
-test_data
+/test_data

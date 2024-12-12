@@ -1,8 +1,6 @@
 import os.path as path
 import json
 
-from configure.static_folder_configure import StaticFolderConfigure
-
 class Configure:
     '''
     The config class definition.
@@ -24,11 +22,10 @@ class Configure:
     See proxy fix in flask documentation. Optional, no fix if not defined.
     '''
     
-    staticConfigures: list[StaticFolderConfigure]
-    '''static configures.'''
-    
     sourceConfigures: list[dict]
     '''data source configures, not processed.'''
+    standaloneConfigures: list[dict]
+    '''standalone service configures, not processed.'''
     
     def __init__(self, data: dict):
         '''Read the configure object. Raises corespondent exception whenever encounters problem.'''
@@ -46,8 +43,8 @@ class Configure:
         else:
             self.flaskProxyFix = None
         
-        assert 'static' in data, 'Static folder configure is required. Add a empty [] will fix this.'
-        self.staticConfigures = [StaticFolderConfigure(v) for v in list(data['static'])]
+        assert 'standalone' in data, 'Standalone service configure is required. Add a empty [] will fix this.'
+        self.standaloneConfigures = data['standalone']
         
         assert 'sources' in data, 'Source configure is required. Add something will fix this.'
         self.sourceConfigures = data['sources']
@@ -74,7 +71,7 @@ class Configure:
                 'debug': False,
                 'sources': [],
                 'converted': [],
-                'static': []
+                'standalone': []
             }, fp)
         print('Welcome to MyMapCache. An empty configure file has been generated.')
         return

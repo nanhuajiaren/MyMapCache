@@ -1,10 +1,10 @@
 import traceback
-from flask import Flask, send_from_directory
+from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from configure.static_folder_configure import StaticFolderConfigure
 from configure.configure import Configure
 from map_sources.source_manage import getMapSource
+from standalone_services.service_manage import getStandaloneService
 
 app = Flask(__name__)
 
@@ -13,25 +13,28 @@ def serverBase():
     return 'Server running!'
 
 def makeServer(app: Flask, config: Configure):
+    '''
+    Make the server.
+    '''
+    # Proxy fix (not recommended)
+    print('Info: Proxy Fix:', config.flaskProxyFix is not None)
+    if config.flaskProxyFix is not None:
+        app.wsgi_app = ProxyFix(app.wsgi_app, **config.flaskProxyFix)
+    
+    # Implement the services
     for sourceConfig in config.sourceConfigures:
         source = getMapSource(sourceConfig)
         source.makeServer(app)
-    for staticConfig in config.staticConfigures:
-        makeStatic(app, staticConfig)
-    return
-
-def makeStatic(app: Flask, staticConfig: StaticFolderConfigure):
-    def staticResponse(subPath: str):
-        return send_from_directory(staticConfig.localPath, subPath)
-    app.route(staticConfig.serverPath + '/<path:subPath>')(staticResponse)
+    for standaloneConfig in config.standaloneConfigures:
+        service = getStandaloneService(standaloneConfig)
+        service.makeServer(app)
+    
+    print('Server built!')
     return
 
 if __name__ == '__main__': 
     try:
         config = Configure.loadConfigureFile()
-        print('Info: Proxy Fix:', config.flaskProxyFix is not None)
-        if config.flaskProxyFix is not None:
-            app.wsgi_app = ProxyFix(app.wsgi_app, **config.flaskProxyFix)
         makeServer(app, config)
         app.run(port=config.port, debug=config.debug, **config.otherServerConfigures)
     except Exception as e:
