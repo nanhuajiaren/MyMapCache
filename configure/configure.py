@@ -71,7 +71,11 @@ class Configure:
                 'debug': False,
                 'sources': [],
                 'converted': [],
-                'standalone': []
+                'standalone': [
+                    {
+                        'type': 'serviceInfo'
+                    }
+                ]
             }, fp)
         print('Welcome to MyMapCache. An empty configure file has been generated.')
         return
