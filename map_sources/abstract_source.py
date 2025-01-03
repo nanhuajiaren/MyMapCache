@@ -38,3 +38,8 @@ class MapSource:
         '''
         pass
     
+    def clearCache(self) -> None:
+        '''
+        Clear unused cache files.
+        '''
+        pass

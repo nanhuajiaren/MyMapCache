@@ -21,7 +21,7 @@ class LocalTileSource(MapSource):
             self.tileFormat = 'png'
         return
     
-    def getTile(self, x: int, y: int, z: int) -> Response:
+    def getLocalTile(self, x: int, y: int, z: int) -> Response:
         if not self.cacheTile(x, y, z):
             abort(404)
         return send_file(self.makeLocalPath(x, y, z))
@@ -30,10 +30,14 @@ class LocalTileSource(MapSource):
     def cacheTile(self, x: int, y: int, z: int) -> bool:
         return path.exists(self.makeLocalPath(x, y, z))
     
+    @override
     def makeLocalPath(self, x: int, y: int, z: int) -> str:
         return path.join(self.localPath, str(z), str(x), str(y) + '.' + self.tileFormat)
     
     @override
     def makeServer(self, app: Flask):
-        app.route(self.serverPath + '/<int:z>/<int:x>/<int:y>')(self.getTile)
+        app.add_url_rule(
+            self.serverPath + '/<int:z>/<int:x>/<int:y>', 
+            'getLocalTile_' + self.serverPath, 
+            self.getLocalTile)
         return

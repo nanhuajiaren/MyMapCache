@@ -3,3 +3,4 @@
 /configure.json
 __pycache__
 /test_data
+/.cache
