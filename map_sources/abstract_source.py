@@ -43,3 +43,8 @@ class MapSource:
         Clear unused cache files.
         '''
         pass
+
+
+DEFAULT_HEADERS = {
+    'User-Agent': 'MyMapCache/1.0.0'
+}
