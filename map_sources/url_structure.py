@@ -32,8 +32,8 @@ class UrlStructure():
             return str(z)
         if struct['type'] == 'switch':
             assert 'items' in struct \
-                and type(struct['item']) == list, \
+                and type(struct['items']) == list, \
                 'URL component [switch] must contain item list!'
-            randomList:list = struct['item']
+            randomList:list = struct['items']
             return randomList[random.randint(0, len(randomList) - 1)]
         assert False, 'No such URL Component Type: ' + str(struct['type'])

@@ -9,6 +9,9 @@ from map_sources.url_structure import UrlStructure
 from map_sources.abstract_source import DEFAULT_HEADERS, MapSource
 
 class SimpleTileSource(MapSource):
+    '''
+    The simplest online tile source.
+    '''
 
     remotePath: UrlStructure
     cacheBase: str
