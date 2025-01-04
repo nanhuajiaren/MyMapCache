@@ -55,5 +55,6 @@ class WmtsSource(SimpleTileSource):
             self.remotePath.formURL(x, y, z),
             params=params,
             headers=self.headers,
-            proxies=self.proxies
+            proxies=self.proxies,
+            verify=not self.noVerify
         )

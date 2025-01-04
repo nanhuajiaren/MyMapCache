@@ -19,6 +19,7 @@ class SimpleTileSource(MapSource):
     id: str | None
     headers: dict
     proxies: dict | None
+    noVerify: bool
     
     @override
     def __init__(self, data: dict):
@@ -44,13 +45,20 @@ class SimpleTileSource(MapSource):
             self.proxies = data['proxies']
         else:
             self.proxies = None
+        if 'noVerify' in data:
+            self.noVerify = bool(data['noVerify'])
+        else:
+            self.noVerify = False
+        if self.noVerify:
+            print('Warning: Ignoring SSL verify on ' + self.serverPath)
         return
     
     def requestFromRemote(self, x: int, y: int, z: int) -> requests.Response:
         return requests.get(
             self.remotePath.formURL(x, y, z),
             headers=self.headers,
-            proxies=self.proxies
+            proxies=self.proxies,
+            verify=not self.noVerify
         )
     
     @override
