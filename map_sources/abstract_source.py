@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response, abort, send_file
 
 class MapSource:
     '''
@@ -10,11 +10,28 @@ class MapSource:
     are required, leave it blank.
     '''
     
+    serverPath: str
+    id: str
+    tileFormat: str
+    
     def __init__(self, data: dict):
         '''
-        Initialize from the configure data block. The data is not processed, so it's important to
-        check the config data in this 
+        Initialize from the configure data block. Most of the data is not processed, so it's important to
+        check the config data in this.
         '''
+        if 'serverPath' in data:
+            self.serverPath = str(data['serverPath'])
+        else:
+            self.serverPath = None
+        if 'id' in data:
+            self.id = str(data['id'])
+        else:
+            self.id = None
+        assert 'id' in data or 'serverPath' in data, 'Missing serverPath and id in map source config'
+        if 'tileFormat' in data:
+            self.tileFormat = str(data['tileFormat'])
+        else:
+            self.tileFormat = 'png'
         pass
     
     def cacheTile(self, x: int, y: int, z: int) -> bool:
@@ -32,10 +49,20 @@ class MapSource:
         '''
         pass
     
+    def getLocalTile(self, x: int, y: int, z: int) -> Response:
+        if not self.cacheTile(x, y, z):
+            abort(404)
+        return send_file(self.makeLocalPath(x, y, z))
+    
     def makeServer(self, app: Flask) -> None:
         '''
         Make routers in the flask server
         '''
+        if self.serverPath is None: return
+        app.add_url_rule(
+            self.serverPath + '/<int:z>/<int:x>/<int:y>', 
+            'getLocalTile_' + self.serverPath, 
+            self.getLocalTile)
         pass
     
     def clearCache(self) -> None:
