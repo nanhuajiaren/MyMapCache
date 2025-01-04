@@ -46,15 +46,18 @@ class SimpleTileSource(MapSource):
             self.proxies = None
         return
     
-    @override
-    def cacheTile(self, x: int, y: int, z: int):
-        if path.exists(self.makeLocalPath(x, y, z)):
-            return True
-        res = requests.get(
+    def requestFromRemote(self, x: int, y: int, z: int) -> requests.Response:
+        return requests.get(
             self.remotePath.formURL(x, y, z),
             headers=self.headers,
             proxies=self.proxies
         )
+    
+    @override
+    def cacheTile(self, x: int, y: int, z: int):
+        if path.exists(self.makeLocalPath(x, y, z)):
+            return True
+        res = self.requestFromRemote(x, y, z)
         if res.status_code != 200:
             print("Request Failed: " + str(res.status_code))
             print("URL: " + self.remotePath.formURL(x, y, z))

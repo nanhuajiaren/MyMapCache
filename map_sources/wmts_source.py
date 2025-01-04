@@ -49,20 +49,11 @@ class WmtsSource(SimpleTileSource):
         return params
     
     @override
-    def cacheTile(self, x: int, y: int, z: int) -> bool:
+    def requestFromRemote(self, x, y, z):
         params = self.formParams(x, y, z)
-        res = requests.get(
+        return requests.get(
             self.remotePath.formURL(x, y, z),
             params=params,
             headers=self.headers,
             proxies=self.proxies
         )
-        if res.status_code != 200:
-            print("Request Failed: " + str(res.status_code))
-            print("URL: " + self.remotePath.formURL(x, y, z))
-            if res.content is not None:
-                print(str(res.content))
-            return False
-        with open(self.makeLocalPath(x, y, z), 'wb') as fp:
-            fp.write(res.content)
-        return True
