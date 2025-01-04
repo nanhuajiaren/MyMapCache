@@ -24,6 +24,8 @@ class Configure:
     
     sourceConfigures: list[dict]
     '''data source configures, not processed.'''
+    conversionConfigures: list[dict]
+    '''conversion configures, not processed.'''
     standaloneConfigures: list[dict]
     '''standalone service configures, not processed.'''
     
@@ -48,6 +50,10 @@ class Configure:
         
         assert 'sources' in data, 'Source configure is required. Add something will fix this.'
         self.sourceConfigures = data['sources']
+        
+        assert 'converted' in data, 'Conversion configure is required. Add a empty [] will fix this.'
+        self.conversionConfigures = data['converted']
+        
         if len(self.sourceConfigures) == 0:
             print('Warning: No source found!')
         

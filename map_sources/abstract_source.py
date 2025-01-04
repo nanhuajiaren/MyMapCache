@@ -10,8 +10,8 @@ class MapSource:
     are required, leave it blank.
     '''
     
-    serverPath: str
-    id: str
+    serverPath: str | None
+    id: str | None
     tileFormat: str
     
     def __init__(self, data: dict):
@@ -19,7 +19,7 @@ class MapSource:
         Initialize from the configure data block. Most of the data is not processed, so it's important to
         check the config data in this.
         '''
-        if 'serverPath' in data:
+        if 'serverPath' in data and data['serverPath'] is not None:
             self.serverPath = str(data['serverPath'])
         else:
             self.serverPath = None
