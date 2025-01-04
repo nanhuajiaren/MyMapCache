@@ -7,7 +7,6 @@ class LocalTileSource(MapSource):
     
     localPath: str
     serverPath: str
-    tileFormat: str
     
     @override
     def __init__(self, data: dict):

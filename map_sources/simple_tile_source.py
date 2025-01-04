@@ -70,4 +70,4 @@ class SimpleTileSource(MapSource):
     
     @override
     def makeLocalPath(self, x: int, y: int, z: int):
-        return self.cacheBase + '/' + str(z) + '_' + str(x) + '_' + str(y) + '.png'
+        return self.cacheBase + '/' + str(z) + '_' + str(x) + '_' + str(y) + '.' + self.tileFormat
