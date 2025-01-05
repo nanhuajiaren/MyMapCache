@@ -7,6 +7,7 @@ from map_sources.wmts_source import WmtsSource
 source_types = {
     '': lambda data: MapSource(data)
 }
+source_types.clear()
 source_types['local'] = lambda data: LocalTileSource(data)
 source_types['simple_tile'] = lambda data: SimpleTileSource(data)
 source_types['wmts'] = lambda data: WmtsSource(data)
