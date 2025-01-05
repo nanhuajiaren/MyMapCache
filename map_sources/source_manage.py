@@ -4,8 +4,9 @@ from map_sources.local_tile_source import LocalTileSource
 from map_sources.simple_tile_source import SimpleTileSource
 from map_sources.wmts_source import WmtsSource
 
-source_types: dict = dict()
-source_types['local'] = lambda data: LocalTileSource(data)
+source_types = {
+    'local': lambda data: LocalTileSource(data)
+}
 source_types['simple_tile'] = lambda data: SimpleTileSource(data)
 source_types['wmts'] = lambda data: WmtsSource(data)
 source_types['arcgis'] = lambda data: ArcgisSource(data)
