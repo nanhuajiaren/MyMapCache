@@ -26,3 +26,12 @@ class Conversion(MapSource):
         if path.exists(self.makeLocalPath(x, y, z)): return True
         pass
     
+    
+    @override
+    def makeLocalPath(self, x: int, y: int, z: int) -> str:
+        return self.cacheBase + '/{z}_{x}_{y}.{format}'.format(
+            z = z,
+            x = x,
+            y = y,
+            format = self.tileFormat
+        )

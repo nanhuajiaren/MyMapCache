@@ -29,11 +29,12 @@ class ArcgisSource(SimpleTileSource):
     
     @override
     def requestFromRemote(self, x: int, y: int, z: int):
+        url = self.remotePath.formURL(x, y, z) + '/MapServer/tile/{z}/{y}/{x}'.format(
+            z = z + self.zOffset, 
+            x = x + self.xOffset, 
+            y = y + self.yOffset)
         return requests.get(
-            self.remotePath.formURL(x, y, z) + '/MapServer/tile/{z}/{x}/{y}'.format(
-                z = z + self.zOffset, 
-                x = x + self.xOffset, 
-                y = y + self.yOffset),
+            url,
             headers=self.headers,
             proxies=self.proxies,
             verify=not self.noVerify
