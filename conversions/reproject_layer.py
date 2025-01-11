@@ -39,7 +39,7 @@ class Wgs84ToWebMercator(Reproject):
             assert self.originalX == self.transformedX and self.originalZ == self.transformedZ
             return
         
-        def getOriginalY(self, imY: int, imSize:int = 256):
+        def getOriginalY(self, imY: int, imSize:int = 256) -> float:
             worldY = atan(exp(PI - (self.transformedY + imY / imSize) / (2 ** self.transformedZ) * 2 * PI)) * 2 * (180 / PI) - 90
             tileY = (1 - worldY / 90) * (2 ** self.transformedZ) / 4
             return (tileY - self.originalY) * imSize
