@@ -42,7 +42,10 @@ class SimpleTileSource(MapSource):
         else:
             self.noVerify = False
         if self.noVerify:
-            print('Warning: Ignoring SSL verify on ' + self.serverPath)
+            if self.serverPath:
+                print('Warning: Ignoring SSL verify on ' + self.serverPath)
+            elif self.id:
+                print('Warning: Ignoring SSL verify on ' + self.id)
         return
     
     def requestFromRemote(self, x: int, y: int, z: int) -> requests.Response:
