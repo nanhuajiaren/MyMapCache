@@ -17,6 +17,8 @@ class MergeLayers(Conversion):
         image = Image.open(self.dataSources[0].makeLocalPath(x, y, z)).convert('RGBA')
         for otherSource in self.dataSources[1:]:
             otherImage = Image.open(otherSource.makeLocalPath(x, y, z)).convert('RGBA')
+            if otherImage.width != image.width or otherImage.height != image.height:
+                otherImage = otherImage.resize(image.size)
             image.paste(otherImage, (0, 0), otherImage)
         image.save(self.makeLocalPath(x, y, z))
         return True
