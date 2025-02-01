@@ -88,12 +88,13 @@ class ReprojectLayer(Conversion):
     def cacheTile(self, x: int, y: int, z: int):
         if path.exists(self.makeLocalPath(x, y, z)): return True
         requiredImages = self.transform.requiredTiles(x, y, z)
-        for c in requiredImages:
-            if not self.dataSources[0].cacheTile(*c): return False
         transformed: list[ImageFile] = []
         for c in requiredImages:
+            if not self.dataSources[0].cacheTile(*c): break
+            flag = True
             im = Image.open(self.dataSources[0].makeLocalPath(*c)).convert('RGBA')
             transformed.append(ImageOps.deform(im, self.transform.meshProvider(c, (x, y, z))))
+        if len(transformed) == 0: return False
         im = transformed[0]
         for otherIm in transformed[1:]:
             im.paste(otherIm, (0, 0), otherIm)
