@@ -1,4 +1,5 @@
 from flask import Flask, Response, abort, send_file
+import os.path as path
 
 class MapSource:
     '''
@@ -52,7 +53,7 @@ class MapSource:
     def getLocalTile(self, x: int, y: int, z: int) -> Response:
         if not self.cacheTile(x, y, z):
             abort(404)
-        return send_file(self.makeLocalPath(x, y, z))
+        return send_file(path.abspath(self.makeLocalPath(x, y, z)))
     
     def makeServer(self, app: Flask) -> None:
         '''
