@@ -1,5 +1,6 @@
 import os
 import os.path as path
+import time
 from typing import override
 from map_sources.abstract_source import MapSource
 
@@ -12,6 +13,7 @@ class Conversion(MapSource):
     '''
     cacheBase: str
     dataSources: list[MapSource]
+    cacheTime: int
     
     @override
     def __init__(self, data):
@@ -19,6 +21,10 @@ class Conversion(MapSource):
         assert 'cacheBase' in data, 'Missing cacheBase in conversion config!'
         self.cacheBase = str(data['cacheBase'])
         os.makedirs(self.cacheBase, exist_ok=True)
+        if 'cacheTime' in data:
+            self.cacheTime = int(data['cacheTime'])
+        else:
+            self.cacheTime = 24 * 3600 * 3
         return
     
     @override
@@ -35,3 +41,18 @@ class Conversion(MapSource):
             y = y,
             format = self.tileFormat
         )
+    
+    @override
+    def clearCache(self):
+        if self.cacheTime < 0:
+            return
+        now = time.time()
+        fileList = [
+            self.cacheBase + '/' + v for v in os.listdir(self.cacheBase) 
+            if now - path.getctime(self.cacheBase + '/' + v) > self.cacheTime
+            and v.endswith('.' + self.tileFormat)]
+        print('toDelete: ')
+        print(fileList)
+        for v in fileList:
+            os.remove(v)
+        return

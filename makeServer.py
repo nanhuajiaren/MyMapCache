@@ -26,6 +26,7 @@ def makeServer(app: Flask, config: Configure):
         if source.id is not None:
             namedSources[source.id] = source
         source.makeServer(app)
+        source.clearCache()
     for convertConfig in config.conversionConfigures:
         converted = getConversion(convertConfig)
         if converted.id is not None:
@@ -33,6 +34,7 @@ def makeServer(app: Flask, config: Configure):
         assert 'inputSources' in convertConfig, 'Missing inputSources in conversion config!'
         converted.dataSources = [namedSources[v] for v in convertConfig['inputSources']]
         converted.makeServer(app)
+        converted.clearCache()
     for standaloneConfig in config.standaloneConfigures:
         service = getStandaloneService(standaloneConfig)
         service.makeServer(app)

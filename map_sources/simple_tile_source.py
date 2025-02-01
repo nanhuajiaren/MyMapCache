@@ -1,6 +1,7 @@
 import os.path as path
 import os
 from typing import override
+import time
 
 import requests
 from flask import Flask, Response, abort, send_file
@@ -20,6 +21,7 @@ class SimpleTileSource(MapSource):
     headers: dict
     proxies: dict | None
     noVerify: bool
+    cacheTime: int
     
     @override
     def __init__(self, data: dict):
@@ -46,6 +48,10 @@ class SimpleTileSource(MapSource):
                 print('Warning: Ignoring SSL verify on ' + self.serverPath)
             elif self.id:
                 print('Warning: Ignoring SSL verify on ' + self.id)
+        if 'cacheTime' in data:
+            self.cacheTime = int(data['cacheTime'])
+        else:
+            self.cacheTime = 24 * 3600 * 3
         return
     
     def requestFromRemote(self, x: int, y: int, z: int) -> requests.Response:
@@ -73,4 +79,24 @@ class SimpleTileSource(MapSource):
     
     @override
     def makeLocalPath(self, x: int, y: int, z: int):
-        return self.cacheBase + '/' + str(z) + '_' + str(x) + '_' + str(y) + '.' + self.tileFormat
+        return self.cacheBase + '/{z}_{x}_{y}.{format}'.format(
+            z = z,
+            x = x,
+            y = y,
+            format = self.tileFormat
+        )
+    
+    @override
+    def clearCache(self):
+        if self.cacheTime < 0:
+            return
+        now = time.time()
+        fileList = [
+            self.cacheBase + '/' + v for v in os.listdir(self.cacheBase) 
+            if now - path.getctime(self.cacheBase + '/' + v) > self.cacheTime
+            and v.endswith('.' + self.tileFormat)]
+        print('toDelete: ')
+        print(fileList)
+        for v in fileList:
+            os.remove(v)
+        return

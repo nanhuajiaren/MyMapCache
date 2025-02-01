@@ -22,3 +22,8 @@ class LocalTileSource(MapSource):
     @override
     def makeLocalPath(self, x: int, y: int, z: int) -> str:
         return path.join(self.localPath, str(z), str(x), str(y) + '.' + self.tileFormat)
+    
+    @override
+    def clearCache(self):
+        '''No need to clear!'''
+        return
