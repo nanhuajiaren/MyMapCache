@@ -23,7 +23,7 @@ class StaticService(StandaloneService):
     
     def makeServer(self, app: Flask):
         def staticResponse(subPath: str):
-            return send_from_directory(self.localPath, subPath)
+            return send_from_directory(path.abspath(self.localPath), subPath)
         app.add_url_rule(
             self.serverPath + '/<path:subPath>', 
             'staticResponse_' + self.serverPath, 
