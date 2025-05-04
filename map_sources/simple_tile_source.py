@@ -68,14 +68,16 @@ class SimpleTileSource(MapSource):
             return True
         res = self.requestFromRemote(x, y, z)
         if res.status_code != 200:
-            print("Request Failed: " + str(res.status_code))
-            print("URL: " + self.remotePath.formURL(x, y, z))
-            if res.content is not None:
-                print(str(res.content))
+            self.reportError(x, y, z, res)
             return False
         with open(self.makeLocalPath(x, y, z), 'wb') as fp:
             fp.write(res.content)
         return True
+    
+    def reportError(self, x: int, y: int, z: int, serverResponse: requests.Response):
+        print("Request Failed: " + str(serverResponse.status_code))
+        print("URL: " + self.remotePath.formURL(x, y, z))
+        return
     
     @override
     def makeLocalPath(self, x: int, y: int, z: int):
