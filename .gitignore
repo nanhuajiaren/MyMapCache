@@ -1,6 +1,7 @@
 /.vscode
 /private
-/configure.json
+/*.json
+/*.yaml
 __pycache__
 /test_data
 /.cache
