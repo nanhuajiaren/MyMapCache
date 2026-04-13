@@ -3,9 +3,8 @@ from flask import Flask
 
 from configure.configure import Configure
 from makeServer import makeServer, startCacheClearThread
-from private.register_private_functions import registerPrivateFunctions
+import private
 
-registerPrivateFunctions()
 app = Flask(__name__)
 
 if __name__ == '__main__': 

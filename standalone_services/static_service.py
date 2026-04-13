@@ -1,6 +1,6 @@
 import os.path as path
 from flask import Flask, send_from_directory
-from standalone_services.abstract_service import StandaloneService
+from standalone_services import StandaloneService
 
 @StandaloneService.register('static')
 class StaticService(StandaloneService):

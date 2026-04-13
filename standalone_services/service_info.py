@@ -1,4 +1,4 @@
-from standalone_services.abstract_service import StandaloneService
+from standalone_services import StandaloneService
 
 @StandaloneService.register('serviceInfo')
 class ServiceInfo(StandaloneService):

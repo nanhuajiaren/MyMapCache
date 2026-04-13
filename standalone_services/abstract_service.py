@@ -9,8 +9,6 @@ class StandaloneService:
     Technicly it's feasible to create unrelated services by creating its implementation, but you should
     use something else to do that.
     '''
-    
-    service_types: dict[str, type['StandaloneService']] = dict()
 
     def __init__(self, data: dict):
         '''
@@ -24,9 +22,11 @@ class StandaloneService:
         '''
         pass
     
+    service_types: dict[str, type['StandaloneService']] = dict()
+    
     @staticmethod
     def register(name: str):
-        def wrapper(cls: type['StandaloneService']):
+        def wrapper(cls):
             StandaloneService.service_types[name] = cls
             return cls
         return wrapper

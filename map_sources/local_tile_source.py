@@ -1,8 +1,9 @@
 from typing import override
 import os.path as path
 from flask import Flask, Response, send_file, abort
-from map_sources.abstract_source import MapSource
+from map_sources import MapSource
 
+@MapSource.register('local')
 class LocalTileSource(MapSource):
     
     localPath: str

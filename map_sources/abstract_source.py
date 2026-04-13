@@ -1,5 +1,6 @@
-from flask import Flask, Response, abort, send_file
 import os.path as path
+from decorator import decorator
+from flask import Flask, Response, abort, send_file
 
 class MapSource:
     '''
@@ -72,6 +73,20 @@ class MapSource:
         '''
         pass
 
+    source_types: dict[str, type['MapSource']] = dict()
+
+    @staticmethod
+    def register(name: str):
+        def wrapper(cls):
+            MapSource.source_types[name] = cls
+            return cls
+        return wrapper
+    
+    @staticmethod
+    def getMapSource(data: dict) -> 'MapSource':
+        assert 'type' in data, 'Missing type in data source config!'
+        assert data['type'] in MapSource.source_types, 'No such data source type: ' + str(data['type'])
+        return MapSource.source_types[data['type']](data)
 
 DEFAULT_HEADERS = {
     'User-Agent': 'MyMapCache/1.0.0'

@@ -7,12 +7,6 @@ from PIL.ImageOps import SupportsGetMesh
 
 from conversions.abstract_conversion import Conversion
 
-available_reprojects = {
-    '': lambda data: Reproject(data)
-}
-available_reprojects.clear()
-available_reprojects['wgs84_to_webmercator'] = lambda data: Wgs84ToWebMercator(data)
-
 class Reproject():
     
     def __init__(self, configureData: dict):
@@ -24,12 +18,22 @@ class Reproject():
     def requiredTiles(self, transformedX: int, transformedY: int, transformedZ: int) -> list[tuple[int, int, int]]:
         ...
     
+    available_reprojects: dict[str, type['Reproject']] = dict()
+
+    @staticmethod
+    def register(name: str):
+        def wrapper(cls):
+            Reproject.available_reprojects[name] = cls
+            return cls
+        return wrapper
+
     @staticmethod
     def fromData(configureData: dict) -> 'Reproject':
         assert 'type' in configureData, 'Missing type in transform info!'
-        assert configureData['type'] in available_reprojects, 'Unknown transform: ' + configureData['type']
-        return available_reprojects[configureData['type']](configureData)
+        assert configureData['type'] in Reproject.available_reprojects, 'Unknown transform: ' + configureData['type']
+        return Reproject.available_reprojects[configureData['type']](configureData)
 
+@Reproject.register('wgs84_to_webmercator')
 class Wgs84ToWebMercator(Reproject):
     
     class Wgs84ToWebMercatorMeshProvider(SupportsGetMesh):
@@ -45,9 +49,7 @@ class Wgs84ToWebMercator(Reproject):
             return (tileY - self.originalY) * imSize
         
         @override
-        def getmesh(self, image: ImageFile) -> list[
-            tuple[tuple[int, int, int, int], tuple[int, int, int, int, int, int, int, int]]
-        ]:
+        def getmesh(self, image: ImageFile):
             imW, meshH = image.width, image.height // 8
             targetMesh = [(0, meshH * i, imW, meshH * (i + 1)) for i in range(8)]
             mesh = [(v, (
@@ -73,6 +75,7 @@ class Wgs84ToWebMercator(Reproject):
     def meshProvider(self, original: tuple[int, int, int], transformed: tuple[int, int, int]) -> SupportsGetMesh:
         return self.Wgs84ToWebMercatorMeshProvider(original, transformed)
 
+@Conversion.register('reproject')
 class ReprojectLayer(Conversion):
     
     transform: Reproject
@@ -88,7 +91,7 @@ class ReprojectLayer(Conversion):
     def cacheTile(self, x: int, y: int, z: int):
         if path.exists(self.makeLocalPath(x, y, z)): return True
         requiredImages = self.transform.requiredTiles(x, y, z)
-        transformed: list[ImageFile] = []
+        transformed: list[Image.Image] = []
         for c in requiredImages:
             if not self.dataSources[0].cacheTile(*c): break
             flag = True

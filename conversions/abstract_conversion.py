@@ -56,3 +56,18 @@ class Conversion(MapSource):
         for v in fileList:
             os.remove(v)
         return
+    
+    conversion_types: dict[str, type['Conversion']] = dict()
+
+    @staticmethod
+    def register(name: str):
+        def wrapper(cls):
+            Conversion.conversion_types[name] = cls
+            return cls
+        return wrapper
+    
+    @staticmethod
+    def getConversion(data: dict) -> 'Conversion':
+        assert 'type' in data, 'Missing type in conversion config!'
+        assert data['type'] in Conversion.conversion_types, 'No such conversion type: ' + str(data['type'])
+        return Conversion.conversion_types[data['type']](data)

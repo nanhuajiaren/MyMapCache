@@ -1,14 +1,12 @@
 from threading import Thread
 import time
-from configure.configure import Configure
-from conversions.conversion_manage import getConversion
-from map_sources.abstract_source import MapSource
-from map_sources.source_manage import getMapSource
-from standalone_services import StandaloneService
-
-
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+from configure import Configure
+from conversions import Conversion
+from map_sources import MapSource
+from standalone_services import StandaloneService
 
 allSources: list[MapSource] = []
 namedSources: dict[str, MapSource] = {}
@@ -27,13 +25,13 @@ def makeServer(app: Flask, config: Configure):
     
     # Implement the services
     for sourceConfig in config.sourceConfigures:
-        source = getMapSource(sourceConfig)
+        source = MapSource.getMapSource(sourceConfig)
         if source.id is not None:
             namedSources[source.id] = source
         allSources.append(source)
         source.makeServer(app)
     for convertConfig in config.conversionConfigures:
-        converted = getConversion(convertConfig)
+        converted = Conversion.getConversion(convertConfig)
         if converted.id is not None:
             namedSources[converted.id] = converted
         allSources.append(converted)

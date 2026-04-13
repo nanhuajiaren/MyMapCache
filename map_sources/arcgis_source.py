@@ -1,9 +1,9 @@
-
 from typing import override
-
 import requests
-from map_sources.simple_tile_source import SimpleTileSource
 
+from map_sources import MapSource, SimpleTileSource
+
+@MapSource.register('arcgis')
 class ArcgisSource(SimpleTileSource):
     
     zOffset: int

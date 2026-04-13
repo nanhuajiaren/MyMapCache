@@ -1,8 +1,10 @@
 from typing import override
-from conversions.abstract_conversion import Conversion
 import os.path as path
 from PIL import Image
 
+from conversions import Conversion
+
+@Conversion.register('merge_layers')
 class MergeLayers(Conversion):
     '''
     Simply draw one above another according to the orders.

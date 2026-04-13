@@ -2,13 +2,12 @@ import os.path as path
 import os
 from typing import override
 import time
-
 import requests
 from flask import Flask, Response, abort, send_file
 
-from map_sources.url_structure import UrlStructure
-from map_sources.abstract_source import DEFAULT_HEADERS, MapSource
+from map_sources import MapSource, DEFAULT_HEADERS, UrlStructure
 
+@MapSource.register('simple_tile')
 class SimpleTileSource(MapSource):
     '''
     The simplest online tile source.
