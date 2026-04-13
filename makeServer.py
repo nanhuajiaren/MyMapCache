@@ -4,7 +4,7 @@ from configure.configure import Configure
 from conversions.conversion_manage import getConversion
 from map_sources.abstract_source import MapSource
 from map_sources.source_manage import getMapSource
-from standalone_services.service_manage import getStandaloneService
+from standalone_services import StandaloneService
 
 
 from flask import Flask
@@ -41,7 +41,7 @@ def makeServer(app: Flask, config: Configure):
         converted.dataSources = [namedSources[v] for v in convertConfig['inputSources']]
         converted.makeServer(app)
     for standaloneConfig in config.standaloneConfigures:
-        service = getStandaloneService(standaloneConfig)
+        service = StandaloneService.getStandaloneService(standaloneConfig)
         service.makeServer(app)
 
     print('Server built!')

@@ -2,6 +2,7 @@ import os.path as path
 from flask import Flask, send_from_directory
 from standalone_services.abstract_service import StandaloneService
 
+@StandaloneService.register('static')
 class StaticService(StandaloneService):
     '''
     A static folder server. Use `LocalTileSource` for tiles hence they can provide more infomation.

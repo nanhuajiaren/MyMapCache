@@ -10,6 +10,8 @@ class StandaloneService:
     use something else to do that.
     '''
     
+    service_types: dict[str, type['StandaloneService']] = dict()
+
     def __init__(self, data: dict):
         '''
         Initialize from the configure data block. 
@@ -21,3 +23,16 @@ class StandaloneService:
         Make routers in the flask server
         '''
         pass
+    
+    @staticmethod
+    def register(name: str):
+        def wrapper(cls: type['StandaloneService']):
+            StandaloneService.service_types[name] = cls
+            return cls
+        return wrapper
+    
+    @staticmethod
+    def getStandaloneService(data: dict) -> 'StandaloneService':
+        assert 'type' in data, 'Missing type in service config!'
+        assert data['type'] in StandaloneService.service_types, 'No such service type: ' + str(data['type'])
+        return StandaloneService.service_types[data['type']](data)
