@@ -191,4 +191,5 @@ If you need something bypass that proxy, use
 
 ## Notes
 
-The file `start_with_private.py` is included in the github repository, but it's my private code, so don't ask about anything about it.
+* I'm not gonna spend hundreds of $ to buy certificate for this "cheap fix" project. The packaged exe will be rejeceted by Microsoft SmartScreen. (And also Windows Defender, since it hosts web service.) You can always build your own executable on source code.
+* Don't ask about anything about the private module.
