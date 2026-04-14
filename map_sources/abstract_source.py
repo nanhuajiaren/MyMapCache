@@ -88,5 +88,5 @@ class MapSource:
         return MapSource.source_types[data['type']](data)
 
 DEFAULT_HEADERS = {
-    'User-Agent': 'MyMapCache/1.0.0'
+    'User-Agent': 'MyMapCache/1.1.0'
 }
