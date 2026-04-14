@@ -1,5 +1,4 @@
 import os.path as path
-from decorator import decorator
 from flask import Flask, Response, abort, send_file
 
 class MapSource:

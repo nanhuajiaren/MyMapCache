@@ -3,7 +3,6 @@ import os
 from typing import override
 import time
 import requests
-from flask import Flask, Response, abort, send_file
 
 from map_sources import MapSource, DEFAULT_HEADERS, UrlStructure
 
