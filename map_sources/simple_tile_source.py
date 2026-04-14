@@ -21,6 +21,7 @@ class SimpleTileSource(MapSource):
     proxies: dict | None
     noVerify: bool
     cacheTime: int
+    maxZ: int
     
     @override
     def __init__(self, data: dict):
@@ -36,6 +37,10 @@ class SimpleTileSource(MapSource):
             self.headers = DEFAULT_HEADERS
         if 'proxies' in data: 
             self.proxies = data['proxies']
+            if self.proxies is not None:
+                for k in self.proxies:
+                    if self.proxies[k] is None:
+                        self.proxies[k] = ''
         else:
             self.proxies = None
         if 'noVerify' in data:
@@ -51,6 +56,10 @@ class SimpleTileSource(MapSource):
             self.cacheTime = int(data['cacheTime'])
         else:
             self.cacheTime = 24 * 3600 * 3
+        if 'maxZ' in data:
+            self.maxZ = int(data['maxZ'])
+        else:
+            self.maxZ = 32
         return
     
     def requestFromRemote(self, x: int, y: int, z: int) -> requests.Response:
@@ -63,6 +72,7 @@ class SimpleTileSource(MapSource):
     
     @override
     def cacheTile(self, x: int, y: int, z: int):
+        if z > self.maxZ: return False
         if path.exists(self.makeLocalPath(x, y, z)):
             return True
         res = self.requestFromRemote(x, y, z)

@@ -3,17 +3,19 @@ import random
 
 class UrlStructure():
 
-    structures: list[dict]
+    structures: list[dict|str]|str
 
-    def __init__(self, data: list[dict]):
+    def __init__(self, data: list[dict|str]|str):
         self.structures = data
         self.formURL(0, 0, 0)
         return
 
     def formURL(self, x: int, y: int, z: int) -> str:
+        if isinstance(self.structures, str): return self.structures
         return ''.join([self.processURLComponent(v, x, y, z) for v in self.structures])
 
-    def processURLComponent(self, struct: dict, x: int, y: int, z: int) -> str:
+    def processURLComponent(self, struct: dict | str, x: int, y: int, z: int) -> str:
+        if isinstance(struct, str): return struct
         assert 'type' in struct, 'Unknown URL Component type!'
         if struct['type'] == 'literal':
             assert 'content' in struct, 'Literal URL missing content!'

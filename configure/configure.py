@@ -1,5 +1,71 @@
 import os.path as path
-import json
+import yaml
+
+INITIAL_CONFIG = \
+"""
+# MyMapCache config file
+# See https://github.com/nanhuajiaren/MyMapCache for more info.
+# This project is intended for lightweight tile service only. For full analysis, api service or heavy load server
+# please use other products.
+# DO NOT use this service as a production server. If you still want to do this, follow the
+# instructions on Flask document.
+
+port: 8001
+
+# "Sources" are external services where you get the original tiles.
+# sources:
+# Example: OSM Tile
+# -
+#   type: simple_tile
+#   remotePath:
+#   - https://tile.openstreetmap.org/
+#   - type: z
+#   - /
+#   - type: x
+#   - /
+#   - type: y
+#   - .png
+#   serverPath: /osm
+#   cacheBase: ./.cache/osm
+# The cacheBase folder is the directory to store cache files. This path is required. DO NOT place anything important in this directory! 
+# You can specify network parameters for each individual source:
+#   proxies:
+#     http: 127.0.0.1:<your port>
+#     https: 127.0.0.1:<your port>
+#   headers:
+#     User-Agent: This/is/me
+
+# "Converted" tiles are somehow generated from original sources.
+# Before using conversions, you need to configure every source in the `sources` block, and label them with the key `id`.
+# -
+#   type: arcgis
+#   remotepath: https://www.example.com/some/arcgis/service/in/wgs84
+#   cacheBase: ./.cache/some/arcgis/service
+#   id: some_arcgis_service
+# For example, if you need to bypass the system proxy in this service:
+#   proxies:
+#     http:
+#     https:
+# Then configure the conversion in the "converted" block:
+# converted:
+# -
+#   type: reproject
+#   transform:
+#     type: wgs84_to_webmercator
+#   inputSources:
+#   - some_arcgis_service
+#   cacheBase: ./.cache/m/some/arcgis/service
+#   serverPath: /some/service
+# You can use converted tiles as a input for another conversion, as long as the input is placed before output.
+
+# Once you have mastered this configure system, you might have more sources and conversions.
+# In this case, you can split your configures into several files:
+# include:
+# - service1.yaml
+# - service2.yaml
+# Note that secondary includes are not supported. Only the include list in the initial file is recognized.
+
+"""
 
 class Configure:
     '''
@@ -34,8 +100,10 @@ class Configure:
         
         assert 'port' in data, 'Port configure is required.'
         self.port = int(data['port'])
-        assert 'debug' in data, 'Debug configure is required.'
-        self.debug = bool(data['debug'])
+        if 'debug' in data:
+            self.debug = bool(data['debug'])
+        else:
+            self.debug = False
         if 'otherServerConfigures' in data:
             self.otherServerConfigures = dict(data['otherServerConfigures'])
         else:
@@ -45,44 +113,46 @@ class Configure:
         else:
             self.flaskProxyFix = None
         
-        assert 'standalone' in data, 'Standalone service configure is required. Add a empty [] will fix this.'
-        self.standaloneConfigures = data['standalone']
-        
-        assert 'sources' in data, 'Source configure is required. Add something will fix this.'
-        self.sourceConfigures = data['sources']
-        
-        assert 'converted' in data, 'Conversion configure is required. Add a empty [] will fix this.'
-        self.conversionConfigures = data['converted']
-        
-        if len(self.sourceConfigures) == 0:
-            print('Warning: No source found!')
+        self.sourceConfigures = []
+        self.conversionConfigures = []
+        self.standaloneConfigures = []
+
+        self.append(data)
         
         return
     
-    @staticmethod
-    def loadConfigureFile() -> 'Configure':
-        '''Load configure File.'''
-        Configure.makeBasicConfigure()
-        with open('configure.json', 'rt', encoding='utf-8') as fp:
-            data = json.load(fp)
-        return Configure(data)
+    def append(self, data: dict):
+        if 'sources' in data and data['sources'] is not None:
+            self.sourceConfigures.extend(data['sources'])
+
+        if 'standalone' in data and data['standalone'] is not None:
+            self.standaloneConfigures.extend(data['standalone'])
+        
+        if 'converted' in data and data['converted'] is not None:
+            self.conversionConfigures.extend(data['converted'])
     
     @staticmethod
-    def makeBasicConfigure() -> None:
+    def loadConfigureFile(source: str = 'configure.yaml') -> 'Configure':
+        '''Load configure File.'''
+        Configure.makeBasicConfigure(source)
+        with open(source, 'rt', encoding='utf-8') as fp:
+            data = yaml.safe_load(fp)
+        config = Configure(data)
+        if 'include' in data and data['include'] is not None:
+            for filePath in data['include']:
+                with open(filePath, 'rt', encoding='utf-8') as fp:
+                    data = yaml.safe_load(fp)
+                config.append(data)
+        if len(config.sourceConfigures) == 0:
+            print('Warning: No source found!')
+        return config
+    
+    @staticmethod
+    def makeBasicConfigure(source: str) -> None:
         '''Make the basic configure file. Skips if configure file already exits.'''
-        if path.exists('configure.json'): return
-        with open('configure.json', 'wt', encoding='utf-8') as fp:
-            json.dump({
-                'port': 8001,
-                'debug': False,
-                'sources': [],
-                'converted': [],
-                'standalone': [
-                    {
-                        'type': 'serviceInfo'
-                    }
-                ]
-            }, fp)
+        if path.exists(source): return
+        with open(source, 'wt', encoding='utf-8') as fp:
+            fp.write(INITIAL_CONFIG)
         print('Welcome to MyMapCache. An empty configure file has been generated.')
         return
 
