@@ -8,7 +8,7 @@ If someone ask me why ... isn't in this, my answer is use MapProxy.
 
 ## Basic Configure
 
-Click the executable to run it, and it will start with a blank config near the execuable named `congigure.yaml` (this path is hardcoded for now). You can prettify it, add comments, or make any format change as you like:
+Click the executable to run it, and it will start with a blank config near the execuable named `configure.yaml` (this path is hardcoded for now). You can prettify it, add comments, or make any format change as you like:
 ```
 port: 8001
 sources:
