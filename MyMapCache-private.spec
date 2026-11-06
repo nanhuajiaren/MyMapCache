@@ -1,5 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+import sys
+import os
+os.environ["PATH"] = os.environ["PATH"] + sys.executable[:-len("python.exe")] + '/Library/bin;'
 
 a = Analysis(
     ['start_with_private.py'],
