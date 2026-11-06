@@ -1,0 +1,10 @@
+name: MyMapCache
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python = 3.13
+  - pip
+  - flask >= 3.1
+  - pillow >= 12
+  - pyinstaller >= 6
