@@ -8,3 +8,5 @@ dependencies:
   - flask >= 3.1
   - pillow >= 12
   - pyinstaller >= 6
+  - pyyaml >= 6
+  - requests >= 2.34
